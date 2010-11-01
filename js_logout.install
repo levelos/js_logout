@@ -1,0 +1,21 @@
+<?php
+// $Id:
+/**
+ * @file
+ * Install file for JS Logout Module
+ *
+ */
+
+/**
+ * Implements hook_uninstall().
+ */
+function js_logout_uninstall() {
+  variable_del('js_logout_timeout');
+  variable_del('js_logout_use_watchdog');
+  variable_del('js_logout_redirect_url');
+  variable_del('js_logout_message');
+  
+  foreach (user_roles(TRUE) as $role) {
+    variable_del('js_logout_role_' . $role);
+  }  
+}

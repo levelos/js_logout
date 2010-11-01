@@ -1,0 +1,4 @@
+; $Id:
+name = JS Logout
+description = Adds automated timed logout with a prompt for users
+core = 6.x

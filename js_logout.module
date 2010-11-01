@@ -1,0 +1,39 @@
+<?php
+// $Id: 
+
+/**
+ * @file
+ * Used to automagically log out a user after a preset time.
+ */
+
+/**
+ * Provide Drupal site administrators with a method to ensure site users
+ * are automatically logged out after a preset time.
+ */
+
+/**
+ * Implementation of hook_perm().
+ */
+function js_logout_perm() {
+  return array('administer js_logout');
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function js_logout_menu() {
+  $items = array();
+
+  $items['admin/settings/js_logout'] = array(
+    'title' => 'JS Logout',
+    'description' => 'Administer JS Logout settings.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('js_logout_settings'),
+    'access arguments' => array('administer js_logout'),
+    'file' => 'js_logout.admin.inc',
+    'type' => MENU_NORMAL_ITEM    
+  );
+
+  return $items;
+}
+
