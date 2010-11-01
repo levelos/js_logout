@@ -1,14 +1,9 @@
 <?php
-// $Id: 
+// $Id:
 
 /**
  * @file
  * Used to automagically log out a user after a preset time.
- */
-
-/**
- * Provide Drupal site administrators with a method to ensure site users
- * are automatically logged out after a preset time.
  */
 
 /**
@@ -31,9 +26,70 @@ function js_logout_menu() {
     'page arguments' => array('js_logout_settings'),
     'access arguments' => array('administer js_logout'),
     'file' => 'js_logout.admin.inc',
-    'type' => MENU_NORMAL_ITEM    
+    'type' => MENU_NORMAL_ITEM
+  );
+  $items['js_logout'] = array(
+    'title' => 'JS Logout',
+    'description' => 'Logout a user.',
+    'page callback' => 'js_logout_logout',
+    'access callack' => 'js_logout_access'
   );
 
   return $items;
 }
 
+/**
+ * Access callback for js_logout.
+ */
+function js_logout_access() {
+  global $user;
+  $ret = FALSE;
+  if ($user->uid && user_access('access content')) {
+    $ret = TRUE;
+  }
+
+  return $ret;
+}
+
+/**
+ * Implementation of hook_help().
+ */
+function js_logout_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#js_logout':
+      return '<p>'. t('This module allows you to force site users to be logged out after a given amount of time due to inactivity after first being presented with a confirmation dialog.') .'</p>';
+  }
+}
+
+/**
+ * Implementation of hook_init().
+ */
+function js_logout_init() {
+  // return the timeout value as a setting and load js file
+  drupal_add_js(array('js_logout' => array('timeout' => variable_get('js_logout_timeout', 1800))), 'setting');
+  drupal_add_js(drupal_get_path('module', 'js_logout') . '/js_logout.js');
+
+  // we need a backup plan if JS is disabled
+
+}
+
+/**
+ * Callback that performs the actual logout and redirects the user.
+ */
+function js_logout_logout() {
+  global $user;
+  watchdog('user', 'Session closed for %name.', array('%name' => $user->name));
+
+  // Destroy the current session:
+  session_destroy();
+  
+  // Only variables can be passed by reference workaround.
+  $null = NULL;
+  user_module_invoke('logout', $null, $user);
+
+  // Load the anonymous user
+  $user = drupal_anonymous_user();
+
+  $redirect_url = filter_xss_admin(variable_get('js_logout_redirect_url', '<front>'));
+  drupal_goto($redirect_url);
+}

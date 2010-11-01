@@ -15,7 +15,7 @@ function js_logout_uninstall() {
   variable_del('js_logout_redirect_url');
   variable_del('js_logout_message');
   
-  foreach (user_roles(TRUE) as $role) {
-    variable_del('js_logout_role_' . $role);
+  foreach (user_roles(TRUE) as $key => $role) {
+    variable_del('js_logout_role_' . $key);
   }  
 }
