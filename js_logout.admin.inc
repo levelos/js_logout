@@ -39,11 +39,11 @@ function js_logout_settings() {
     '#collapsible' => FALSE,
   );
   
-  foreach (user_roles(TRUE) as $role) {
-    $form['js_logout_roles']['js_logout_role_' . $role] = array(
+  foreach (user_roles(TRUE) as $key => $role) {
+    $form['js_logout_roles']['js_logout_role_' . $key] = array(
       '#type' => 'checkbox',
       '#title' => $role,
-      '#default_value' => variable_get('js_logout_role_' . $role, TRUE)
+      '#default_value' => variable_get('js_logout_role_' . $key, TRUE)
     );
   }
   
@@ -52,7 +52,7 @@ function js_logout_settings() {
     '#title' => t('Redirect URL at logout'),
     '#default_value' => variable_get('js_logout_redirect_url', '<front>'),
     '#size' => 40,
-    '#description' => t('Send users to this page when they are logged out.')
+    '#description' => t('Send users to this internal page when they are logged out.')
   );
 
   $form['js_logout_message']  = array(
@@ -62,33 +62,18 @@ function js_logout_settings() {
     '#size' => 40,
   );
 
-  // $form['autologout_one_session'] = array(
-  //   '#type'  => 'fieldset',
-  //   '#title' => t('One Session settings'),
-  //   '#tree'  => TRUE,
-  //   '#description' => t('One session will provide enforcement for "one session" per user. If a user logs in when another session for that user is active the other session will be deactivated. The user will be notified and the event logged.'),
-  // );
-  // $values = variable_get('autologout_one_session', 0);
-  // 
-  // foreach (user_roles(TRUE) as $role) {
-  //   $this_value = $values[$role];
-  // 
-  //   $form['autologout_one_session'][$role] = array(
-  //     '#type' => 'select',
-  //     '#title' => $role,
-  //     '#options' => array('1' => t('Enforce'), '0' => t('Exclude')),
-  //     '#default_value' => (isset($values[$role]) ? $values[$role] : 0),
-  //   );
-  // }
-  // $markup4_items = array(
-  //   t('Enforce : all users in this role will be only allowed one session.'),
-  //   t('Exclude : all users in this role are excluded from one session functionality.'),
-  // );
-  // $markup4 = theme('item_list', $markup4_items, t('Policy description')) . t('Please note: If a user is found to be in a role that allows disabling this feature, this overrides any enforcement');
-  // $form['autologout_one_session']['markup4'] = array(
-  //  '#type' => 'markup',
-  //  '#value' => $markup4,
-  // );
-  
   return system_settings_form($form);  
+}
+
+function js_logout_settings_validate($form, $form_state) {
+  // validate timeout
+  $timeout = $form_state['values']['js_logout_timeout'];
+  if (!is_numeric($timeout) || ((int)$timeout != $timeout) || $timeout < 60) {
+    form_set_error('js_logout_timeout', t('The timeout must be an integer greater than 60.'));
+  }
+    
+  // validate redirect path
+  if (!menu_valid_path(array('link_path' => $form_state['values']['js_logout_redirect_url']))) {
+    form_set_error('js_logout_redirect_url', t('The redirect URL you entered is not a valid path on this site.'));
+  }
 }
