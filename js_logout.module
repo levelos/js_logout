@@ -47,7 +47,7 @@ function js_logout_menu() {
 }
 
 /**
- * Access callback for js_logout.
+ * Access callback for js_logout ahah paths.
  */
 function js_logout_access() {
   global $user;
@@ -74,12 +74,17 @@ function js_logout_help($path, $arg) {
  */
 function js_logout_init() {
   global $user;
-  if ($user->uid) {
+  if ($user->uid && _js_logout_logout_role($user)) {
+    // should we be enforcing on admin pages?
+    if (arg(0) == 'admin' && !variable_get('js_logout_enforce_admin', FALSE)) {
+      return;
+    }
+    
     $now = time();
     $timeout = variable_get('js_logout_timeout', 1800);
     $redirct_url = variable_get('js_logout_redirect_url', 'user/login');
     
-    // return the timeout value as a setting and load js file
+    // return all the drupal settings we'll need
     $msg = t('@msg', array('@msg' => variable_get('js_logout_message', 'Your session is about to expire. Do you want to reset it?')));
     $settings = array(
       'timeout' => $timeout * 1000,
@@ -91,7 +96,8 @@ function js_logout_init() {
 
     // we need a backup plan if JS is disabled
     if (isset($_SESSION['js_logout_last'])) {
-      if (($now - $_SESSION['js_logout_last']) >= $timeout) {
+      // if time since last access is > than the timeout + some padding, logout the user
+      if (($now - $_SESSION['js_logout_last']) >= ($timeout + (int)variable_get('js_logout_padding', 10))) {
         _js_logoutlogout();
         drupal_goto($redirct_url, drupal_get_destination());
       }
@@ -113,10 +119,16 @@ function js_logout_ahah_logout() {
   exit();
 }
 
+/**
+ * Callback to reset the last access session variable.
+ */
 function js_logout_ahah_set_last() {
   $_SESSION['js_logout_last'] = time();
 }
 
+/**
+ * Helper to perform the actual logout.
+ */
 function _js_logoutlogout() {
   global $user;
   watchdog('user', 'Session automatically closed for %name by js_logout.', array('%name' => $user->name));
@@ -133,4 +145,17 @@ function _js_logoutlogout() {
   
   // @todo: this message is not being displayed once logged out
   drupal_set_message(t('You have been logged out due to inactivity.'));
+}
+
+/**
+ * Helper to determine if a given user should be auto logged out
+ */
+function _js_logout_logout_role($user) {
+  foreach ($user->roles as $key => $role) {
+    if (variable_get('js_logout_role_' . $key, FALSE)) {
+      return TRUE;
+    }
+  }  
+  
+  return FALSE;
 }

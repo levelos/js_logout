@@ -11,8 +11,8 @@ Drupal.behaviors.js_logout = function (context) {
         success: function() {
           t = setTimeout(logout, Drupal.settings.js_logout.timeout);
         },
-        error: function() {
-          alert('There has been an error resetting your last access time.')
+        error: function(XMLHttpRequest, textStatus) {
+          alert('There has been an error resetting your last access time: ' + textStatus + '.')
         },
       });      
     } else {
@@ -22,8 +22,8 @@ Drupal.behaviors.js_logout = function (context) {
         success: function() {
           document.location.href = Drupal.settings.js_logout.redirect_url;
         },
-        error: function() {
-          alert('There has been an error attempting to logout.')
+        error: function(XMLHttpRequest, textStatus) {
+          alert('There has been an error attempting to logout: ' + textStatus + '.')
         },
       });
     }

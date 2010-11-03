@@ -24,11 +24,12 @@ function js_logout_settings() {
     '#description' => t('The length of inactivity time, in seconds, before Automated Logout.  Must be 60 seconds or greater.')
   );
   
-  $form['js_logout_use_watchdog'] = array(
-   '#type' => 'checkbox',
-   '#title' => t('Enable watchdog Automated Logout logging'),
-   '#default_value' => variable_get('js_logout_use_watchdog', ''),
-   '#description' => t('Enable logging of automatically logged out users')
+  $form['js_logout_padding'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Timeout padding'),
+    '#default_value' => variable_get('js_logout_padding', 10),
+    '#size' => 8,
+    '#description' => t('How many seconds to give a user to respond to the logout dialog before ending their session.')
   );
 
   $form['js_logout_roles'] = array(
@@ -60,6 +61,20 @@ function js_logout_settings() {
     '#default_value' => variable_get('js_logout_message', 'Your session is about to expire. Do you want to reset it?'),
     '#size' => 40,
     '#description' => t('This message must be plain text as it might appear in a javascript confirm dialog.')
+  );
+  
+  $form['js_logout_use_watchdog'] = array(
+   '#type' => 'checkbox',
+   '#title' => t('Enable watchdog Automated Logout logging'),
+   '#default_value' => variable_get('js_logout_use_watchdog', ''),
+   '#description' => t('Enable logging of automatically logged out users')
+  );
+  
+  $form['js_logout_enforce_admin'] = array(
+   '#type' => 'checkbox',
+   '#title' => t('Enforce auto logout on admin pages'),
+   '#default_value' => variable_get('js_logout_enforce_admin', FALSE),
+   '#description' => t('If checked, than users will be auto logged out when administering the site.')
   );
 
   return system_settings_form($form);  
