@@ -14,6 +14,8 @@ function js_logout_uninstall() {
   variable_del('js_logout_use_watchdog');
   variable_del('js_logout_redirect_url');
   variable_del('js_logout_message');
+  variable_del('js_logout_padding');
+  variable_del('js_logout_enforce_admin');
   
   foreach (user_roles(TRUE) as $key => $role) {
     variable_del('js_logout_role_' . $key);
