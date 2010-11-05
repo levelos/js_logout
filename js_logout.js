@@ -21,7 +21,7 @@ Drupal.behaviors.js_logout = function (context) {
       closeOnEscape: false,
       width: 'auto',
       buttons: { 
-        Ok: function() {
+        Reset: function() {
           $(this).dialog("destroy");
           refresh();
         },
