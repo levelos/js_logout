@@ -31,15 +31,13 @@ function js_logout_menu() {
   $items['js_logout_ahah_logout'] = array(
     'title' => 'JS Logout',
     'page callback' => 'js_logout_ahah_logout',
-    'access callack' => 'js_logout_access',
-    'access arguments' => array(),
+    'access callback' => '_js_logout_access_ahah',
     'type' => MENU_CALLBACK
   );
   $items['js_logout_ahah_set_last'] = array(
     'title' => 'JS Logout AHAH Set Last',
     'page callback' => 'js_logout_ahah_set_last',
-    'access callack' => 'js_logout_access',
-    'access arguments' => array(),
+    'access callback' => '_js_logout_access_ahah',
     'type' => MENU_CALLBACK
   );
   
@@ -47,16 +45,11 @@ function js_logout_menu() {
 }
 
 /**
- * Access callback for js_logout ahah paths.
+ * Access callback for ahah menu items
  */
-function js_logout_access() {
+function _js_logout_access_ahah() {
   global $user;
-  $ret = FALSE;
-  if ($user->uid && user_access('access content') && $_SERVER['REQUEST_METHOD'] != 'GET') {
-    $ret = TRUE;
-  }
-
-  return $ret;
+  return $user->uid && user_access('access content');
 }
 
 /**
