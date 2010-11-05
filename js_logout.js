@@ -25,7 +25,7 @@ Drupal.behaviors.js_logout = function (context) {
           $(this).dialog("destroy");
           refresh();
         },
-        Cancel: function() {
+        Logout: function() {
           $(this).dialog("destroy");
           logout();
         }
