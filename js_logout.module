@@ -88,6 +88,7 @@ function js_logout_init() {
     $jquery_ui = module_exists('jquery_ui');
     if ($jquery_ui) {
       jquery_ui_add(array('ui.dialog'));
+      // add default css. @todo: not sure if this is the best approach
       drupal_add_css(drupal_get_path('module', 'jquery_ui') . '/jquery.ui/themes/default/ui.all.css');      
     }
     
@@ -107,7 +108,7 @@ function js_logout_init() {
     if (isset($_SESSION['js_logout_last'])) {
       // if time since last access is > than the timeout + some padding, logout the user
       if (($now - $_SESSION['js_logout_last']) >= ($timeout + (int)variable_get('js_logout_padding', 10))) {
-        _js_logoutlogout();
+        _js_logout_logout();
         drupal_goto($redirct_url, drupal_get_destination());
       }
       else {
@@ -124,7 +125,7 @@ function js_logout_init() {
  * Callback that performs the actual logout and redirects the user.
  */
 function js_logout_ahah_logout() {
-  _js_logoutlogout();
+  _js_logout_logout();
   exit();
 }
 
@@ -138,7 +139,7 @@ function js_logout_ahah_set_last() {
 /**
  * Helper to perform the actual logout.
  */
-function _js_logoutlogout() {
+function _js_logout_logout() {
   global $user;
   watchdog('user', 'Session automatically closed for %name by js_logout.', array('%name' => $user->name));
 
