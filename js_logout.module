@@ -75,6 +75,7 @@ function js_logout_init() {
     
     $now = time();
     $timeout = variable_get('js_logout_timeout', 1800);
+    $timeout_padding = variable_get('js_logout_padding', 10);
     $redirct_url = variable_get('js_logout_redirect_url', 'user/login');
     
     // add jquery ui files
@@ -89,6 +90,7 @@ function js_logout_init() {
     $msg = t('@msg', array('@msg' => variable_get('js_logout_message', 'Your session is about to expire. Do you want to reset it?')));
     $settings = array(
       'timeout' => $timeout * 1000,
+      'timeout_padding' => $timeout_padding * 1000,
       'message' => t('@msg', array('@msg' => variable_get('js_logout_message', 'Your session is about to expire. Do you want to reset it?'))),
       'redirect_url' => url($redirct_url, array('query' => drupal_get_destination())),
       'jquery_ui' => $jquery_ui,
@@ -100,7 +102,7 @@ function js_logout_init() {
     // we need a backup plan if JS is disabled
     if (isset($_SESSION['js_logout_last'])) {
       // if time since last access is > than the timeout + some padding, logout the user
-      if (($now - $_SESSION['js_logout_last']) >= ($timeout + (int)variable_get('js_logout_padding', 10))) {
+      if (($now - $_SESSION['js_logout_last']) >= ($timeout + (int)$timeout_padding)) {
         _js_logout_logout();
         drupal_goto($redirct_url, drupal_get_destination());
       }

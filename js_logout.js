@@ -2,10 +2,12 @@
 
 Drupal.behaviors.js_logout = function (context) {
   var t = setTimeout(init, Drupal.settings.js_logout.timeout);
+  var paddingTimer;
   
   function init() {
     if (Drupal.settings.js_logout.jquery_ui) {
       dialog();
+      paddingTimer = setTimeout(logout, Drupal.settings.js_logout.timeout_padding);
     } else {
       if (confirm(Drupal.settings.js_logout.message) ) {
         refresh();    
@@ -23,6 +25,7 @@ Drupal.behaviors.js_logout = function (context) {
       buttons: { 
         Reset: function() {
           $(this).dialog("destroy");
+          clearTimeout(paddingTimer);
           refresh();
         },
         Logout: function() {
